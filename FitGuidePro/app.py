@@ -11,12 +11,14 @@ def home():
 
 # ---------------- DATABASE ----------------
 db = mysql.connector.connect(
-    host="localhost",
+    host="mysql.railway.internal",
     user="root",
-    password="",
-    database="fitguide_pro",
+    password="aEzOEipWvXtJtSffRLckzSxYnqEqoRbk",
+    database="railway",
     port=3306
 )
+
+
 
 # ---------------- REGISTER ---------------
 
