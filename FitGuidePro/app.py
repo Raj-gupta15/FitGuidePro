@@ -10,13 +10,16 @@ def home():
 
 
 # ---------------- DATABASE (MySQL) ----------------
+import os
+
 db = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="",     # ← your MySQL password (XAMPP)
-    database="fitguide_pro",
-    port=3306
+    host=os.environ.get("MYSQLHOST"),
+    user=os.environ.get("MYSQLUSER"),
+    password=os.environ.get("MYSQLPASSWORD"),
+    database=os.environ.get("MYSQLDATABASE"),
+    port=os.environ.get("MYSQLPORT")
 )
+
 
 
 # ---------------- REGISTER ----------------
