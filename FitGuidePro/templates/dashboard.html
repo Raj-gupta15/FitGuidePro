@@ -16,6 +16,25 @@
     </div>
 </div>
 
+<div class="profile-bar">
+    <div class="profile-header">
+        <h2>Your Fitness Profile</h2>
+        <a href="/onboarding" class="edit-btn">Edit Profile</a>
+    </div>
+
+    <div class="profile-data">
+        <span><strong>Age:</strong> {{ user.age }}</span>
+        <span><strong>Gender:</strong> {{ user.gender }}</span>
+        <span><strong>Height:</strong> {{ user.height }} cm</span>
+        <span><strong>Weight:</strong> {{ user.weight }} kg</span>
+        <span><strong>Body:</strong> {{ user.body_type }}</span>
+        <span><strong>Goal:</strong> {{ user.goal }}</span>
+        <span><strong>Level:</strong> {{ user.level }}</span>
+    </div>
+</div>
+
+
+
 <!-- MAIN CARD -->
 <div class="dashboard-container">
     <h1>Personalized Workout Planner</h1>
