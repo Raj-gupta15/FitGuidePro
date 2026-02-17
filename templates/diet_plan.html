@@ -1,0 +1,160 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Personalized Diet Plan</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        body {
+            color: white;
+        }
+
+        .diet-container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .diet-header p {
+            margin: 3px;
+        }
+
+        .diet-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .meal-card {
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            border: 1px solid #00c6ff;
+            border-radius: 12px;
+        }
+
+        .meal-title {
+            color: #00c6ff;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .food-item {
+            background: rgba(255,255,255,0.08);
+            padding: 12px;
+            border-radius: 7px;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+
+        .food-type {
+            font-size: 12px;
+            background: #00c6ff;
+            color: black;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-left: 10px;
+        }
+
+        .diet-btn {
+            padding: 12px 25px;
+            background: #00c6ff;
+            color: #000;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            margin-top: 25px;
+            font-weight: bold;
+        }
+
+        /* Veg / Non-Veg filter buttons */
+        .filter-btn {
+            padding: 10px 15px;
+            background: #222;
+            border: 1px solid #00c6ff;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        .filter-btn:hover {
+            background: #00c6ff;
+            color: black;
+        }
+    </style>
+
+</head>
+<body>
+
+<div class="diet-container">
+
+    <div class="diet-header">
+        <h2>Your Personalized Diet Plan</h2>
+        <p><strong>Goal:</strong> {{ goal }}</p>
+        <p><strong>Body Type:</strong> {{ body_type }}</p>
+        <p><strong>Calories:</strong> {{ calories }} kcal</p>
+    </div>
+
+    <!-- Filter Buttons -->
+    <div>
+        <button class="filter-btn" onclick="filterFood('veg')">Veg</button>
+        <button class="filter-btn" onclick="filterFood('nonveg')">Non-Veg</button>
+        <button class="filter-btn" onclick="filterFood('all')">Show All</button>
+    </div>
+
+    <div class="diet-grid">
+
+        {% for meal_name, meal_items in diet_plan.items() %}
+        <div class="meal-card">
+            <div class="meal-title">{{ meal_name }}</div>
+
+            {% for item in meal_items %}
+            <div class="food-item" data-type="{{ item.type }}">
+                <strong>{{ item.name }}</strong>
+                <span class="food-type">{{ item.type }}</span><br>
+
+                Cal: {{ item.cal }} |
+                Protein: {{ item.protein }}g |
+                Carbs: {{ item.carbs }}g |
+                Fat: {{ item.fat }}g
+
+                <br><br>
+                <input type="checkbox" name="{{ meal_name }}" value="{{ item.name }}"> Select
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+
+    </div>
+
+    <a href="/dashboard">
+        <button class="diet-btn">Back to Dashboard</button>
+    </a>
+
+</div>
+
+<script>
+function filterFood(type) {
+    const foods = document.querySelectorAll('.food-item');
+
+    foods.forEach(f => {
+        if (type === 'all') {
+            f.style.display = "block";
+        }
+        else if (f.getAttribute('data-type') === type) {
+            f.style.display = "block";
+        }
+        else {
+            f.style.display = "none";
+        }
+    });
+}
+</script>
+
+</body>
+</html>
