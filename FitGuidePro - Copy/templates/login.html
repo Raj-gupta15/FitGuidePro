@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login | FitGuide Pro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="auth-body">
+
+<div class="auth-container">
+    <div class="auth-card">
+        <h2>Welcome Back 💪</h2>
+        <p class="auth-subtitle">Login to continue your fitness journey</p>
+
+        <form method="POST" autocomplete="off">
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" name="email" placeholder="Enter your email" required autocomplete="off"> 
+            </div>
+
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" name="password" placeholder="Enter your password" required autocomplete="new-password">
+            </div>
+
+            <button type="submit" class="auth-btn">Login</button>
+        </form>
+
+        <p class="auth-footer">
+            New user?
+            <a href="/register">Create account</a>
+        </p>
+    </div>
+</div>
+
+</body>
+</html>
