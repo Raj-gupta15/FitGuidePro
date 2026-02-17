@@ -10,8 +10,8 @@ def home():
 
 
 # ---------------- DATABASE (MySQL) ----------------
-import os
 
+import os
 db = mysql.connector.connect(
     host=os.environ.get("MYSQLHOST"),
     user=os.environ.get("MYSQLUSER"),
@@ -278,5 +278,11 @@ def logout():
 
 
 # ---------------- RUN ----------------
+
+import os
+
+port = int(os.environ.get("PORT", 5000))
+
 if __name__ == "__main__":
-    app.run()
+    app.run(host="0.0.0.0", port=port)
+
