@@ -1,5 +1,8 @@
 from flask import Flask, render_template, request, redirect, session, jsonify
-import mysql.connector
+import os
+import psycopg2
+from urllib.parse import urlparse
+
 
 app = Flask(__name__)
 app.secret_key = "fitguide_secret"
@@ -11,14 +14,18 @@ def home():
 
 # ---------------- DATABASE (MySQL) ----------------
 
-import os
-db = mysql.connector.connect(
-    host=os.environ.get("MYSQLHOST"),
-    user=os.environ.get("MYSQLUSER"),
-    password=os.environ.get("MYSQLPASSWORD"),
-    database=os.environ.get("MYSQLDATABASE"),
-    port=os.environ.get("MYSQLPORT")
+DATABASE_URL = os.environ.get("DATABASE_URL")
+
+url = urlparse(DATABASE_URL)
+
+db = psycopg2.connect(
+    dbname=url.path[1:],
+    user=url.username,
+    password=url.password,
+    host=url.hostname,
+    port=url.port
 )
+
 
 
 
