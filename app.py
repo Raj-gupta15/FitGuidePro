@@ -65,30 +65,25 @@ def register():
 
 
 # ---------------- LOGIN ----------------
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         email = request.form["email"]
         password = request.form["password"]
 
-        cursor = db.cursor(dictionary=True)
-        cursor.execute(
-            "SELECT * FROM users WHERE email=%s AND password=%s",
-            (email, password)
-        )
+        cursor = db.cursor()
+        cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
         user = cursor.fetchone()
 
-        if user:
-            session["user_id"] = user["user_id"]
-
-            if user["onboarding_done"] == 0:
-                return redirect("/onboarding")
-
+        if user and user[3] == password:
+            session["user_id"] = user[0]
             return redirect("/dashboard")
-
-        return render_template("login.html", error="Invalid email or password")
+        else:
+            return render_template("login.html", error="Invalid email or password")
 
     return render_template("login.html")
+
 
 
 
