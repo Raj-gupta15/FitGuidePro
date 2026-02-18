@@ -25,6 +25,18 @@ db = psycopg2.connect(
     host=url.hostname,
     port=url.port
 )
+# Create users table if not exists
+with db.cursor() as cursor:
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            name VARCHAR(100),
+            email VARCHAR(100) UNIQUE,
+            password VARCHAR(200)
+        );
+    """)
+    db.commit()
+
 
 
 
