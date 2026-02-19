@@ -1,48 +1,17 @@
 import os
-from flask import Flask, render_template, request, redirect, session
 import psycopg2
+from flask import Flask, render_template, request, redirect, session
 
 app = Flask(__name__)
-app.secret_key = "supersecretkey"
+app.secret_key = "supersecret"
 
-# -----------------------------
-# DATABASE CONNECTION (Render)
-# -----------------------------
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
-conn = psycopg2.connect(DATABASE_URL)
-conn.autocommit = True
+def get_connection():
+    return psycopg2.connect(DATABASE_URL)
 
+# ---------------- REGISTER ----------------
 
-# -----------------------------
-# CREATE TABLE (AUTO)
-# -----------------------------
-def create_table():
-    cursor = conn.cursor()
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-            id SERIAL PRIMARY KEY,
-            name VARCHAR(100),
-            email VARCHAR(100) UNIQUE,
-            password VARCHAR(100)
-        );
-    """)
-    cursor.close()
-
-create_table()
-
-
-# -----------------------------
-# HOME
-# -----------------------------
-@app.route("/")
-def home():
-    return render_template("login.html")
-
-
-# -----------------------------
-# REGISTER
-# -----------------------------
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
@@ -50,7 +19,9 @@ def register():
         email = request.form["email"]
         password = request.form["password"]
 
+        conn = get_connection()
         cursor = conn.cursor()
+
         try:
             cursor.execute(
                 "INSERT INTO users (name, email, password) VALUES (%s, %s, %s)",
@@ -59,29 +30,33 @@ def register():
             conn.commit()
             return redirect("/login")
         except:
-            return "User already exists!"
+            return "User already exists"
         finally:
             cursor.close()
+            conn.close()
 
     return render_template("register.html")
 
+# ---------------- LOGIN ----------------
 
-# -----------------------------
-# LOGIN
-# -----------------------------
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         email = request.form["email"]
         password = request.form["password"]
 
+        conn = get_connection()
         cursor = conn.cursor()
+
         cursor.execute(
             "SELECT id, password FROM users WHERE email = %s",
             (email,)
         )
+
         user = cursor.fetchone()
+
         cursor.close()
+        conn.close()
 
         if user and user[1] == password:
             session["user_id"] = user[0]
@@ -91,28 +66,22 @@ def login():
 
     return render_template("login.html")
 
+# ---------------- DASHBOARD ----------------
 
-# -----------------------------
-# DASHBOARD
-# -----------------------------
-@app.route("/dashboard", methods=["GET"])
+@app.route("/dashboard")
 def dashboard():
     if "user_id" in session:
         return render_template("dashboard.html")
     return redirect("/login")
 
+# ---------------- LOGOUT ----------------
 
-# -----------------------------
-# LOGOUT
-# -----------------------------
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect("/login")
 
+# ---------------- RUN ----------------
 
-# -----------------------------
-# RUN
-# -----------------------------
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
