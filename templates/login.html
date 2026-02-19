@@ -12,7 +12,8 @@
         <h2>Welcome Back 💪</h2>
         <p class="auth-subtitle">Login to continue your fitness journey</p>
 
-        <form method="POST" autocomplete="off">
+        <form method="POST" action="{{ url_for('login') }}" autocomplete="off">
+
             <div class="input-group">
                 <label>Email</label>
                 <input type="email" name="email" placeholder="Enter your email" required autocomplete="off"> 
