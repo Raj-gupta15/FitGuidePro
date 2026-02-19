@@ -95,7 +95,7 @@ def login():
 # -----------------------------
 # DASHBOARD
 # -----------------------------
-@app.route("/dashboard", methods=["GET",])
+@app.route("/dashboard", methods=["GET"])
 def dashboard():
     if "user_id" in session:
         return render_template("dashboard.html")
