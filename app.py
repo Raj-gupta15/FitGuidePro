@@ -1,6 +1,6 @@
 import os
 import psycopg2
-from flask import Flask, render_template, request, redirect, session, jsonify
+from flask import Flask, render_template, request, redirect, session
 
 app = Flask(__name__)
 app.secret_key = "supersecret"
@@ -29,8 +29,8 @@ def register():
 
         try:
             cur.execute("""
-                INSERT INTO users (name, email, password)
-                VALUES (%s, %s, %s)
+                INSERT INTO users (name, email, password, onboarding_done)
+                VALUES (%s, %s, %s, 0)
             """, (name, email, password))
 
             conn.commit()
@@ -56,10 +56,12 @@ def login():
         cur = conn.cursor()
 
         cur.execute("""
-            SELECT id, password, onboarding_done FROM users WHERE email=%s
+            SELECT user_id, password, onboarding_done 
+            FROM users 
+            WHERE email=%s
         """, (email,))
+        
         user = cur.fetchone()
-
         cur.close()
         conn.close()
 
@@ -68,6 +70,7 @@ def login():
 
             if user[2] == 0:
                 return redirect("/onboarding")
+
             return redirect("/dashboard")
 
         return render_template("login.html", error="Invalid email or password")
@@ -97,12 +100,13 @@ def onboarding():
                 age=%s, gender=%s, height=%s, weight=%s,
                 body_type=%s, goal=%s, level=%s,
                 onboarding_done=1
-            WHERE id=%s
+            WHERE user_id=%s
         """, (age, gender, height, weight, body_type, goal, level, session["user_id"]))
 
         conn.commit()
         cur.close()
         conn.close()
+
         return redirect("/dashboard")
 
     return render_template("onboarding.html")
@@ -118,7 +122,7 @@ def dashboard():
 
     cur.execute("""
         SELECT name, age, gender, height, weight, body_type, goal, level
-        FROM users WHERE id=%s
+        FROM users WHERE user_id=%s
     """, (session["user_id"],))
 
     user = cur.fetchone()
@@ -127,7 +131,7 @@ def dashboard():
 
     return render_template("dashboard.html", user=user)
 
-# ---------------- GET EXERCISE PLAN ----------------
+# ---------------- EXERCISE PLAN ----------------
 @app.route("/exercise-plan", methods=["POST"])
 def exercise_plan():
     if "user_id" not in session:
@@ -139,12 +143,15 @@ def exercise_plan():
     conn = get_conn()
     cur = conn.cursor()
 
+    # Fetch user body goal level
     cur.execute("""
         SELECT body_type, goal, level 
-        FROM users WHERE id=%s
+        FROM users WHERE user_id=%s
     """, (session["user_id"],))
+    
     user = cur.fetchone()
 
+    # Fetch exercise according to user
     cur.execute("""
         SELECT exercise_name, primary_muscle, secondary_muscle, video_embed_url
         FROM exercises
